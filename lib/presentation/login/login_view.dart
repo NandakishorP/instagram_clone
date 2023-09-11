@@ -138,7 +138,7 @@ class _LoginViewState extends State<LoginView> {
                         },
                       ));
                     } else {
-                      print('verify your email');
+                      print('verify your email address');
                     }
                   },
                   child: const Text('Login'),
