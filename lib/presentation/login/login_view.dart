@@ -4,6 +4,7 @@ import 'package:instagram_clone/main.dart';
 import 'package:instagram_clone/presentation/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_clone/presentation/login/sign_up.dart';
+import 'package:instagram_clone/presentation/login/verify_email_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -130,15 +131,21 @@ class _LoginViewState extends State<LoginView> {
                     }
                     if (!context.mounted) return;
                     final user = FirebaseAuth.instance.currentUser;
+
                     final emailVerifired = user?.emailVerified ?? false;
                     if (emailVerifired) {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
                         builder: (context) {
                           return HomePage();
                         },
-                      ));
+                      ), (route) => false);
                     } else {
-                      print('verify your email address');
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return const VerificationView();
+                        },
+                      ));
                     }
                   },
                   child: const Text('Login'),
