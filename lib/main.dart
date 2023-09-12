@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             case ConnectionState.done:
               return const LoginView();
             default:
-              return const Text('Loading...');
+              return const CircularProgressIndicator();
           }
         },
       ),
