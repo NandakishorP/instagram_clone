@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/presentation/constants.dart';
 import 'package:instagram_clone/presentation/explore/widgets/explore_image.dart';
+import 'package:instagram_clone/presentation/profile/widgets/profile_edit.dart';
 import 'package:instagram_clone/presentation/profile/widgets/profile_image_row.dart';
 import 'package:instagram_clone/presentation/profile/widgets/profile_row_one.dart';
 
@@ -78,7 +79,13 @@ class _ProfileViewState extends State<ProfileView> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             backgroundColor: Colors.grey.withOpacity(0.330)),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileEdit(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           'Edit Profile',
                           style: TextStyle(

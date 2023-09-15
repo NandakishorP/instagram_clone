@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:instagram_clone/main.dart';
 import 'package:instagram_clone/presentation/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:instagram_clone/presentation/login/login_view.dart';
+import 'package:instagram_clone/presentation/login/verify_email_view.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -144,23 +147,66 @@ class _SignUpState extends State<SignUp> {
                       return;
                     }
                     try {
-                      final userCredenetial = await FirebaseAuth.instance
+                      await FirebaseAuth.instance
                           .createUserWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
-                      print(userCredenetial);
+                      if (!context.mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return const VerificationView();
+                        },
+                      ));
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'weak-password') {
-                        print('weak password');
+                        final snackbar = buildSnackBar(
+                          'Use a strong password of string and numbers',
+                        );
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
                       } else if (e.code == 'email-already-in-use') {
-                        print('email-already-in-use');
+                        final snackbar = buildSnackBar('user already exist');
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
                       } else if (e.code == 'invalid-email') {
-                        print('Invaild email');
+                        final snackbar = buildSnackBar(e.code);
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
                       }
                     }
                     if (!context.mounted) return;
-                    Navigator.of(context).pop();
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user == null) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginView(),
+                          ),
+                          (route) => false);
+                    }
+                    final emailVerifired = user?.emailVerified ?? false;
+
+                    if (emailVerifired) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(),
+                        ),
+                        (route) => false,
+                      );
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          user?.sendEmailVerification();
+                          return const VerificationView();
+                        },
+                      ));
+                    }
                   },
                   child: const Text('Register'),
                 ),

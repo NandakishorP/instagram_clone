@@ -12,8 +12,6 @@ class VerificationView extends StatefulWidget {
 class _VerificationViewState extends State<VerificationView> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -32,7 +30,7 @@ class _VerificationViewState extends State<VerificationView> {
             const Padding(
               padding: EdgeInsets.all(12.0),
               child: Text(
-                'Please verify your email address',
+                'Please check your email address for the verification email',
                 style: TextStyle(
                   color: Colors.white,
                 ),
@@ -57,7 +55,7 @@ class _VerificationViewState extends State<VerificationView> {
                     );
                   }
                 },
-                child: const Text("Send email verification "))
+                child: const Text("Didn't recieve it. Send again..!"))
           ],
         ),
       ),

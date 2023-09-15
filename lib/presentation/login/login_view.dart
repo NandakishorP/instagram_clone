@@ -5,6 +5,7 @@ import 'package:instagram_clone/presentation/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_clone/presentation/login/sign_up.dart';
 import 'package:instagram_clone/presentation/login/verify_email_view.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -116,22 +117,34 @@ class _LoginViewState extends State<LoginView> {
                       return;
                     }
                     try {
-                      final userCredenetial = await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
-                      print(userCredenetial);
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
+                        final snackbar = buildSnackBar('User not exist');
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
                         return;
                       } else if (e.code == 'wrong-password') {
+                        final snackbar = buildSnackBar(e.code);
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
                         return;
                       }
                     }
                     if (!context.mounted) return;
                     final user = FirebaseAuth.instance.currentUser;
-
+                    if (user == null) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginView(),
+                          ),
+                          (route) => false);
+                    }
                     final emailVerifired = user?.emailVerified ?? false;
                     if (emailVerifired) {
                       Navigator.of(context).pushAndRemoveUntil(
@@ -141,6 +154,7 @@ class _LoginViewState extends State<LoginView> {
                         },
                       ), (route) => false);
                     } else {
+                      user?.sendEmailVerification();
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
                           return const VerificationView();
@@ -210,4 +224,23 @@ class RegisterTextFIeld extends StatelessWidget {
           )),
     );
   }
+}
+
+Future<SnackBar> showSnackBar(String text) async {
+  final snackBar = SnackBar(
+    content: Text(text),
+  );
+
+  return snackBar;
+}
+
+SnackBar buildSnackBar(String message) {
+  return SnackBar(
+    backgroundColor: Colors.grey.withOpacity(0.3),
+    duration: const Duration(seconds: 3),
+    content: Text(
+      message,
+      style: const TextStyle(color: Colors.white),
+    ),
+  );
 }
