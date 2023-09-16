@@ -129,6 +129,12 @@ class _LoginViewState extends State<LoginView> {
                         ScaffoldMessenger.of(context).showSnackBar(snackbar);
                         return;
                       } else if (e.code == 'wrong-password') {
+                        final snackbar = buildSnackBar('wrong password');
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
+                      } else {
                         final snackbar = buildSnackBar(e.code);
                         if (!context.mounted) return;
                         FocusScope.of(context).unfocus();

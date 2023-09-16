@@ -179,6 +179,12 @@ class _SignUpState extends State<SignUp> {
                         FocusScope.of(context).unfocus();
                         ScaffoldMessenger.of(context).showSnackBar(snackbar);
                         return;
+                      } else {
+                        final snackbar = buildSnackBar(e.code);
+                        if (!context.mounted) return;
+                        FocusScope.of(context).unfocus();
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
                       }
                     }
                     if (!context.mounted) return;
